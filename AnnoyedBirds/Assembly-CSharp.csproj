@@ -53,6 +53,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\Scripts\AABB.cs" />
+     <Compile Include="Assets\Scripts\HalfSpaceTest.cs" />
+     <Compile Include="Assets\Scripts\ObjectMovementController.cs" />
      <Compile Include="Assets\Scripts\ProjectileDragging.cs" />
      <Compile Include="Assets\Scripts\ProjectileFollow.cs" />
      <Compile Include="Assets\Scripts\Resetter.cs" />
