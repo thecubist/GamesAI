@@ -16,8 +16,8 @@ public class CollisionHelper : MonoBehaviour
     public collisionType collisionTypeSelected = collisionType.box_to_box;
 
     [Header("Generic Variables")]
-    public Transform Object1;
-    public Transform Object2;
+    public GameObject Object1;
+    public GameObject Object2;
 
     [Header("Box specific variables")]
     private Vector3 minPoint1;
@@ -69,7 +69,7 @@ public class CollisionHelper : MonoBehaviour
         //------------------------------------------------ sphere to point -------------------------------------------------//
         if (collisionTypeSelected.Equals(collisionType.box_to_point))
         {
-            Vector3 temp = Object1.position - PointOnPlane;
+            Vector3 temp = Object1.transform.position - PointOnPlane;
 
             //Debug.Log("\n minpoint is: " + minPoint);
             //Debug.Log("\n maxpoint is: " + maxPoint);
@@ -100,40 +100,47 @@ public class CollisionHelper : MonoBehaviour
             {
                 Debug.Log("Colliding");
             }
-
-            /*float result = Vector3.Dot(temp, Normal);
-
-            if (result > 0)
-                Debug.Log("in front");
-            else if (result < 0)
-                Debug.Log("behind");
-            else
-                Debug.Log("on plane");*/
         }
         //------------------------------------------------ sphere to point -------------------------------------------------//
         else if (collisionTypeSelected.Equals(collisionType.sphere_to_point))
         {
-            Vector3 sphereCentre = Object1.position;
-            Vector3 point = Object2.position;
+            Vector3 sphereCentre = Object1.transform.position;
+            Vector3 point = Object2.transform.position;
             double distance = pythag(sphereCentre, point);
+
+            Debug.Log(sphereCentre);
+            Debug.Log(point);
 
             if (distance < sphere1Radius)
             {
+                Object1.GetComponent<Renderer>().material.color = Color.red;
                 Debug.Log("Sphere to point Colliding");
             }
+            else { Object1.GetComponent<Renderer>().material.color = Color.white; }
         }
         //------------------------------------------------ sphere to sphere -------------------------------------------------//
         else if (collisionTypeSelected.Equals(collisionType.sphere_to_sphere))
         {
-            Vector3 sphereCentre1 = Object1.position;
-            Vector3 sphereCentre2 = Object2.position;
+            Vector3 sphereCentre1 = Object1.transform.position;
+            Vector3 sphereCentre2 = Object2.transform.position;
             double distance = pythag(sphereCentre1, sphereCentre2);
 
-            if (distance < (sphere1Radius+sphere2Radius))
+            if (distance < (sphere1Radius + sphere2Radius))
             {
+                Object1.GetComponent<Renderer>().material.color = Color.red;
                 Debug.Log("Sphere to sphere Colliding");
             }
+            else { Object1.GetComponent<Renderer>().material.color = Color.white; }
         }
+
+        /*float result = Vector3.Dot(temp, Normal);
+
+if (result > 0)
+    Debug.Log("in front");
+else if (result < 0)
+    Debug.Log("behind");
+else
+    Debug.Log("on plane");*/
     }
 
     double pythag(Vector3 vector1, Vector3 vector2)
