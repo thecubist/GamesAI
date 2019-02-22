@@ -134,7 +134,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e79ad264aef5f784baa0be1a3b62c24c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  testPoint: {fileID: 1708066367}
+  collisionTypeSelected: 0
+  Object1: {fileID: 0}
+  Object2: {fileID: 0}
+  sphere1Radius: 1
+  sphere2Radius: 1
 --- !u!1 &960489885
 GameObject:
   m_ObjectHideFlags: 0
@@ -468,7 +472,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e79ad264aef5f784baa0be1a3b62c24c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  testPoint: {fileID: 283098186}
+  collisionTypeSelected: 0
+  Object1: {fileID: 0}
+  Object2: {fileID: 0}
+  sphere1Radius: 1
+  sphere2Radius: 1
 --- !u!1 &2115808249
 GameObject:
   m_ObjectHideFlags: 0
