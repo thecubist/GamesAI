@@ -66,7 +66,7 @@ public class CollisionHelper : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
     {
-        //------------------------------------------------ sphere to point -------------------------------------------------//
+        //------------------------------------------------ box to point -------------------------------------------------//
         if (collisionTypeSelected.Equals(collisionType.box_to_point))
         {
             Vector3 temp = Object1.transform.position - PointOnPlane;
