@@ -113,16 +113,16 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &184680900
+--- !u!1 &124384486
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 184680903}
-  - component: {fileID: 184680902}
-  - component: {fileID: 184680901}
+  - component: {fileID: 124384489}
+  - component: {fileID: 124384488}
+  - component: {fileID: 124384487}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -130,19 +130,19 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!81 &184680901
+--- !u!81 &124384487
 AudioListener:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 184680900}
+  m_GameObject: {fileID: 124384486}
   m_Enabled: 1
---- !u!20 &184680902
+--- !u!20 &124384488
 Camera:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 184680900}
+  m_GameObject: {fileID: 124384486}
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
@@ -177,19 +177,19 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!4 &184680903
+--- !u!4 &124384489
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 184680900}
-  m_LocalRotation: {x: 0.22786626, y: 0.3005098, z: -0.07417376, w: 0.92318416}
-  m_LocalPosition: {x: 19.9, y: 91.3, z: -130.4}
+  m_GameObject: {fileID: 124384486}
+  m_LocalRotation: {x: 0.5000004, y: -0, z: -0, w: 0.86602515}
+  m_LocalPosition: {x: 54.4, y: 72.28, z: -2.7}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 27.730001, y: 36.062, z: 0}
+  m_LocalEulerAnglesHint: {x: 60.000004, y: 0, z: 0}
 --- !u!1 &858746473
 GameObject:
   m_ObjectHideFlags: 0
@@ -217,10 +217,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 255017c3d53cb824e87d64870676d0b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  simpleInstance: 1
+  simpleInstance: 0
   tileCount: {x: 100, y: 1, z: 100}
   tilePosMult: {x: 1, y: 1, z: 1}
-  mesh: {fileID: 1125344924233418, guid: 3b96c8611f77ba645b876331c60cfc8a, type: 2}
+  tileMeshes:
+  - {fileID: 1125344924233418, guid: 3b96c8611f77ba645b876331c60cfc8a, type: 2}
+  - {fileID: 1125344924233418, guid: 4e1548ef62e7526438764a730dae1871, type: 2}
+  perlinMultipliers: {x: 0.01, y: 0.9}
 --- !u!4 &858746475
 Transform:
   m_ObjectHideFlags: 0
