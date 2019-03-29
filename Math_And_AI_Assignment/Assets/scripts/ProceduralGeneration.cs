@@ -8,6 +8,7 @@ public class ProceduralGeneration : MonoBehaviour
     public Vector3 tileCount = new Vector3(1, 1, 1);
     public Vector3 tilePosMult = new Vector3(0,0,0);
     public GameObject mesh;
+    public GameObject[] tileMeshes = new GameObject[1]; 
 
 	void Start()
     {
@@ -38,11 +39,14 @@ public class ProceduralGeneration : MonoBehaviour
                     if (simpleInstance)
                     {
                         tempY = Mathf.PerlinNoise(i, k);
-                        //instancePos = new Vector3(i * tilePosMult.x, j * tilePosMult.y, k * tilePosMult.z);
 
-                        instancePos = new Vector3(i * tilePosMult.x, (j + 1) * tempY, k * tilePosMult.z);
+                        instancePos = new Vector3(i * tilePosMult.x, j * tilePosMult.y, k * tilePosMult.z);
                         Instantiate(mesh, instancePos, Quaternion.identity);
                         Debug.Log(instancePos);
+                    }
+                    else
+                    {
+
                     }
                 }
             }
