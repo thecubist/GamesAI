@@ -8,20 +8,30 @@ public class ProceduralGeneration : MonoBehaviour
     public Vector3 tileCount = new Vector3(1, 1, 1);
     public Vector3 tilePosMult = new Vector3(0,0,0);
     public GameObject mesh;
+    public int clusterPassIterations = 2;
 
-    private static bool DEVMODE = true;
-	void Start()
+    public bool DEVMODE = true;
+
+	void Awake()
     {
-        regenerateMap();
-
-        clusterPass();
-        Debug.Log("pass1 complete");
-        clusterPass();
-        Debug.Log("pass2 complete");
+        RegenerateMap();
+        for (int i = 0; i < clusterPassIterations; i++)
+        {
+            clusterPass();
+        }
+        MakeBoundingWalls();
     }
 
+    void Wait(int seconds)
+    {
+        System.DateTime unpauseTime = System.DateTime.Now.AddSeconds(seconds);
+        while (System.DateTime.Now < unpauseTime)
+        {
+            Debug.Log("waiting");
+        }
+    }
 
-    void regenerateMap()
+    void RegenerateMap()
     {
         Vector3 instancePos; //used for defining where the next mesh is generated
         float tempY;
@@ -39,8 +49,6 @@ public class ProceduralGeneration : MonoBehaviour
             tilePosMult = new Vector3(1, 1, 1);
         }
 
-        //int meshCount = (int)tileCount.x * (int)tileCount.y * (int)tileCount.z;
-
         //generate the tiles
         for (int i = 0; i < tileCount.x; i++)
         {
@@ -51,21 +59,14 @@ public class ProceduralGeneration : MonoBehaviour
                     if (simpleInstance)
                     {
                         tempY = Mathf.PerlinNoise(i, k);
-                        //instancePos = new Vector3(i * tilePosMult.x, j * tilePosMult.y, k * tilePosMult.z);
 
                         instancePos = new Vector3(i * tilePosMult.x, (j + 1) * tempY, k * tilePosMult.z);
                         Instantiate(mesh, instancePos, Quaternion.identity);
-                        //Debug.Log(instancePos);
                     }
                     else
                     {
                         float yPosition = j * tilePosMult.y;
                         randomNumberHolder = Random.Range(0, 8);
-
-                        //if (randomNumberHolder == 0)
-                        //{
-                        //    yPosition = yPosition + 1;
-                        //}
 
                         instancePos = new Vector3(i * tilePosMult.x, yPosition, k * tilePosMult.z);
 
@@ -79,21 +80,44 @@ public class ProceduralGeneration : MonoBehaviour
         }
     }
 
-    void clusterPass()
+    GameObject[,] MakeGridArray()
     {
         GameObject[] tiles = GameObject.FindGameObjectsWithTag("ProceduralTile");
-        GameObject[,] grid = new GameObject[100,100];
-        int wallCount = 0;
-        //int loopCount = 0;
-        //Vector2 dataPackingLocation = new Vector2(0, 0);
+        GameObject[,] grid = new GameObject[(int)tileCount.x, (int)tileCount.z];
+
         foreach (GameObject tile in tiles)
         {
             grid[(int)tile.GetComponent<Transform>().localPosition.x, (int)tile.GetComponent<Transform>().localPosition.z] = tile;
         }
 
-        for (int i = 0; i < 100; i++)
+        return grid;
+    }
+
+    void MakeBoundingWalls()
+    {
+        GameObject[,] grid = MakeGridArray();
+
+        for (int i = 0; i < tileCount.x; i++)
         {
-            for (int j = 0; j < 100; j++)
+            for (int j = 0; j < tileCount.z; j++)
+            {
+                if (i == 0 || i == (tileCount.x - 1) || j == 0 || j == (tileCount.z - 1))
+                {
+                    grid[i, j].GetComponent<BasicMeshProperties>().objectType = "wall";
+                    grid[i, j].GetComponent<MeshRenderer>().material.color = Color.blue;
+                    grid[i, j].GetComponent<Transform>().position = new Vector3(grid[i, j].GetComponent<Transform>().position.x, 1, grid[i, j].GetComponent<Transform>().position.z);
+                }
+            }
+        }
+    }
+    void clusterPass()
+    {
+        GameObject[,] grid = MakeGridArray();
+        int wallCount = 0;
+
+        for (int i = 0; i < tileCount.x; i++)
+        {
+            for (int j = 0; j < tileCount.z; j++)
             {
                 wallCount = 0;
 
@@ -142,6 +166,15 @@ public class ProceduralGeneration : MonoBehaviour
         }
     }
 
+    void deleteMap()
+    {
+        GameObject[] objects = GameObject.FindGameObjectsWithTag("ProceduralTile");
+
+        foreach (GameObject item in objects)
+        {
+            Destroy(item);
+        }
+    }
 	// Update is called once per frame
 	void Update ()
     {
@@ -149,20 +182,26 @@ public class ProceduralGeneration : MonoBehaviour
         {
             if (Input.GetKeyDown("]"))
             {
-                GameObject[] objects = GameObject.FindGameObjectsWithTag("ProceduralTile");
-
-                foreach (GameObject item in objects)
-                {
-                    Destroy(item);
-                }
-
-                regenerateMap();
+                deleteMap();
+                RegenerateMap();
             }
 
             if (Input.GetKeyDown("["))
             {
                 clusterPass();
                 Debug.Log("pass complete");
+            }
+
+            if (Input.GetKeyDown("p"))
+            {
+                deleteMap();
+                RegenerateMap();
+                for (int i = 0; i < clusterPassIterations; i++)
+                {
+                    clusterPass();
+                    Debug.Log("pass " + (i + 1) + " complete");
+                }
+                MakeBoundingWalls();
             }
         }
 	}
