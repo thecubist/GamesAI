@@ -6,18 +6,26 @@ public class ProceduralGeneration : MonoBehaviour
 {
     public bool simpleInstance = true;
     public Vector3 tileCount = new Vector3(1, 1, 1);
-    public Vector3 tilePosMult = new Vector3(0, 0, 0);
-    public GameObject[] tileMeshes = new GameObject[1];
-    public Vector2 perlinMultipliers = new Vector2(0.005f, 0.005f);
-    private bool generateTileState = false;
-    void Start()
+    public Vector3 tilePosMult = new Vector3(0,0,0);
+    public GameObject mesh;
+
+    private static bool DEVMODE = true;
+	void Start()
     {
-        generateTiles();
+        regenerateMap();
+
+        clusterPass();
+        Debug.Log("pass1 complete");
+        clusterPass();
+        Debug.Log("pass2 complete");
     }
 
-    void generateTiles()
+
+    void regenerateMap()
     {
         Vector3 instancePos; //used for defining where the next mesh is generated
+        float tempY;
+        int randomNumberHolder = 0;
 
         if (tileCount.x < 1 || tileCount.y < 1 || tileCount.z < 1)
         {
@@ -32,7 +40,6 @@ public class ProceduralGeneration : MonoBehaviour
         }
 
         //int meshCount = (int)tileCount.x * (int)tileCount.y * (int)tileCount.z;
-        int meshID = 0;
 
         //generate the tiles
         for (int i = 0; i < tileCount.x; i++)
@@ -43,41 +50,120 @@ public class ProceduralGeneration : MonoBehaviour
                 {
                     if (simpleInstance)
                     {
-                        instancePos = new Vector3(i * tilePosMult.x, j * tilePosMult.y, k * tilePosMult.z);
-                        Instantiate(tileMeshes[0], instancePos, Quaternion.identity);
+                        tempY = Mathf.PerlinNoise(i, k);
+                        //instancePos = new Vector3(i * tilePosMult.x, j * tilePosMult.y, k * tilePosMult.z);
+
+                        instancePos = new Vector3(i * tilePosMult.x, (j + 1) * tempY, k * tilePosMult.z);
+                        Instantiate(mesh, instancePos, Quaternion.identity);
+                        //Debug.Log(instancePos);
                     }
                     else
                     {
-                        //meshID = Random.Range(0, tileMeshes.Length);
+                        float yPosition = j * tilePosMult.y;
+                        randomNumberHolder = Random.Range(0, 8);
 
+                        //if (randomNumberHolder == 0)
+                        //{
+                        //    yPosition = yPosition + 1;
+                        //}
 
-                        if (Mathf.PerlinNoise(Random.Range(0, i) * perlinMultipliers.x, Random.Range(0, j) * perlinMultipliers.y) > 0.5)
-                            meshID = 1;
-                        else
-                            meshID = 0;
+                        instancePos = new Vector3(i * tilePosMult.x, yPosition, k * tilePosMult.z);
 
-                        //Debug.Log("mesh is " + meshID);
-                        //Debug.Log("perlin is " + Mathf.PerlinNoise(i * 0.005f, j * 0.005f));
-                        instancePos = new Vector3(i * tilePosMult.x, j * tilePosMult.y, k * tilePosMult.z);
-                        Instantiate(tileMeshes[meshID], instancePos, Quaternion.identity);
+                        Instantiate(mesh, instancePos, Quaternion.identity);
+                        
+                        mesh.GetComponent<BasicMeshProperties>().changeType(randomNumberHolder);
+
                     }
                 }
             }
         }
     }
 
-    // Update is called once per frame
-    void Update()
+    void clusterPass()
     {
-        if (Input.GetKeyUp(KeyCode.Space))
+        GameObject[] tiles = GameObject.FindGameObjectsWithTag("ProceduralTile");
+        GameObject[,] grid = new GameObject[100,100];
+        int wallCount = 0;
+        //int loopCount = 0;
+        //Vector2 dataPackingLocation = new Vector2(0, 0);
+        foreach (GameObject tile in tiles)
         {
-            GameObject[] allObjects = GameObject.FindGameObjectsWithTag("ProceduralGenerationTile");
-            foreach (GameObject obj in allObjects)
-            {
-                Destroy(obj);
-            }
+            grid[(int)tile.GetComponent<Transform>().localPosition.x, (int)tile.GetComponent<Transform>().localPosition.z] = tile;
+        }
 
-            generateTiles();
+        for (int i = 0; i < 100; i++)
+        {
+            for (int j = 0; j < 100; j++)
+            {
+                wallCount = 0;
+
+                try
+                {
+                    if (grid[i, j + 1].GetComponent<BasicMeshProperties>().objectType.Equals("wall"))
+                        wallCount++;
+                }
+                catch (System.Exception e) { }
+
+
+                try
+                {
+                    if (grid[i, j - 1].GetComponent<BasicMeshProperties>().objectType.Equals("wall"))
+                        wallCount++;
+                }
+                catch (System.Exception e) { }
+
+                try
+                {
+                    if (grid[i + 1, j].GetComponent<BasicMeshProperties>().objectType.Equals("wall"))
+                        wallCount++;
+                }
+                catch (System.Exception e) { }
+
+                try
+                {
+                    if (grid[i - 1, j].GetComponent<BasicMeshProperties>().objectType.Equals("wall"))
+                        wallCount++;
+                }
+                catch (System.Exception e) { }
+
+                if (wallCount > 1)
+                {
+                    grid[i, j].GetComponent<BasicMeshProperties>().objectType = "wall";
+                    grid[i, j].GetComponent<MeshRenderer>().material.color = Color.green;
+                    grid[i, j].GetComponent<Transform>().position = new Vector3(grid[i, j].GetComponent<Transform>().position.x, 1, grid[i, j].GetComponent<Transform>().position.z);
+                }
+                else if(wallCount == 0)
+                {
+                    grid[i, j].GetComponent<BasicMeshProperties>().objectType = "floor";
+                    grid[i, j].GetComponent<MeshRenderer>().material.color = Color.white;
+                    grid[i, j].GetComponent<Transform>().position = new Vector3(grid[i, j].GetComponent<Transform>().position.x, 0, grid[i, j].GetComponent<Transform>().position.z);
+                }
+            }
         }
     }
+
+	// Update is called once per frame
+	void Update ()
+    {
+        if (DEVMODE)
+        {
+            if (Input.GetKeyDown("]"))
+            {
+                GameObject[] objects = GameObject.FindGameObjectsWithTag("ProceduralTile");
+
+                foreach (GameObject item in objects)
+                {
+                    Destroy(item);
+                }
+
+                regenerateMap();
+            }
+
+            if (Input.GetKeyDown("["))
+            {
+                clusterPass();
+                Debug.Log("pass complete");
+            }
+        }
+	}
 }
