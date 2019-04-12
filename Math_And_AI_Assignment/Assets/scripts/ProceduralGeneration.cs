@@ -9,8 +9,11 @@ public class ProceduralGeneration : MonoBehaviour
     public Vector3 tilePosMult = new Vector3(0,0,0);
     public GameObject mesh;
     public int clusterPassIterations = 2;
-
+    public GameObject player;
     public bool DEVMODE = true;
+
+    public Material floorMaterial;
+    public Material wallMaterial;
 
 	void Awake()
     {
@@ -104,7 +107,7 @@ public class ProceduralGeneration : MonoBehaviour
                 if (i == 0 || i == (tileCount.x - 1) || j == 0 || j == (tileCount.z - 1))
                 {
                     grid[i, j].GetComponent<BasicMeshProperties>().objectType = "wall";
-                    grid[i, j].GetComponent<MeshRenderer>().material.color = Color.blue;
+                    grid[i, j].GetComponent<MeshRenderer>().material = wallMaterial;
                     grid[i, j].GetComponent<Transform>().position = new Vector3(grid[i, j].GetComponent<Transform>().position.x, 1, grid[i, j].GetComponent<Transform>().position.z);
                 }
             }
@@ -153,13 +156,13 @@ public class ProceduralGeneration : MonoBehaviour
                 if (wallCount > 1)
                 {
                     grid[i, j].GetComponent<BasicMeshProperties>().objectType = "wall";
-                    grid[i, j].GetComponent<MeshRenderer>().material.color = Color.green;
+                    grid[i, j].GetComponent<MeshRenderer>().material = wallMaterial;
                     grid[i, j].GetComponent<Transform>().position = new Vector3(grid[i, j].GetComponent<Transform>().position.x, 1, grid[i, j].GetComponent<Transform>().position.z);
                 }
-                else if(wallCount == 0)
+                else if (wallCount == 0)
                 {
                     grid[i, j].GetComponent<BasicMeshProperties>().objectType = "floor";
-                    grid[i, j].GetComponent<MeshRenderer>().material.color = Color.white;
+                    grid[i, j].GetComponent<MeshRenderer>().material = floorMaterial;
                     grid[i, j].GetComponent<Transform>().position = new Vector3(grid[i, j].GetComponent<Transform>().position.x, 0, grid[i, j].GetComponent<Transform>().position.z);
                 }
             }
@@ -175,33 +178,83 @@ public class ProceduralGeneration : MonoBehaviour
             Destroy(item);
         }
     }
+
+    void spawnPlayer()
+    {
+        GameObject[,] grid = MakeGridArray();
+        int floorCount = 0;
+
+        for (int i = 0; i < tileCount.x; i++)
+        {
+            for (int j = 0; j < tileCount.z; j++)
+            {
+                floorCount = 0;
+
+                try
+                {
+                    if (grid[i, j + 1].GetComponent<BasicMeshProperties>().objectType.Equals("floor"))
+                        floorCount++;
+                }
+                catch (System.Exception e) { }
+
+
+                try
+                {
+                    if (grid[i, j - 1].GetComponent<BasicMeshProperties>().objectType.Equals("floor"))
+                        floorCount++;
+                }
+                catch (System.Exception e) { }
+
+                try
+                {
+                    if (grid[i + 1, j].GetComponent<BasicMeshProperties>().objectType.Equals("floor"))
+                        floorCount++;
+                }
+                catch (System.Exception e) { }
+
+                try
+                {
+                    if (grid[i - 1, j].GetComponent<BasicMeshProperties>().objectType.Equals("floor"))
+                        floorCount++;
+                }
+                catch (System.Exception e) { }
+
+                if (floorCount == 4)
+                {
+                    Instantiate(player, new Vector3(i,1.6f,j), Quaternion.identity);
+                    return;
+                }
+            }
+        }
+    }
+
 	// Update is called once per frame
 	void Update ()
     {
         if (DEVMODE)
         {
-            if (Input.GetKeyDown("]"))
+            if (Input.GetKeyDown("[1]"))
             {
                 deleteMap();
                 RegenerateMap();
+                Debug.Log("Regenerated map");
             }
 
-            if (Input.GetKeyDown("["))
+            if (Input.GetKeyDown("[2]"))
             {
                 clusterPass();
                 Debug.Log("pass complete");
             }
 
-            if (Input.GetKeyDown("p"))
+            if (Input.GetKeyDown("[3]"))
             {
-                deleteMap();
-                RegenerateMap();
-                for (int i = 0; i < clusterPassIterations; i++)
-                {
-                    clusterPass();
-                    Debug.Log("pass " + (i + 1) + " complete");
-                }
                 MakeBoundingWalls();
+                Debug.Log("walls generated");
+            }
+
+            if (Input.GetKeyDown("[5]"))
+            {
+                spawnPlayer();
             }
         }
 	}

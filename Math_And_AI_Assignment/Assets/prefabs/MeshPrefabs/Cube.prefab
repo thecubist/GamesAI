@@ -58,7 +58,7 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RenderingLayerMask: 4294967295
   m_Materials:
-  - {fileID: 2100000, guid: def7d06ce389cd749bcaa93fe0a0c4ac, type: 2}
+  - {fileID: 2100000, guid: 7d9bdcbb58909074cad3686fda3b3d6d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -108,7 +108,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d84e3917047d9f84cab53fcc244e0b92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  objectType: floor
+  objectType: wall
   materials:
   - {fileID: 2100000, guid: def7d06ce389cd749bcaa93fe0a0c4ac, type: 2}
   - {fileID: 2100000, guid: 7d9bdcbb58909074cad3686fda3b3d6d, type: 2}
