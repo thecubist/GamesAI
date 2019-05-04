@@ -20,7 +20,7 @@ public class ProceduralGeneration : MonoBehaviour
         RegenerateMap();
         for (int i = 0; i < clusterPassIterations; i++)
         {
-            clusterPass();
+            clusterPass(false);
         }
         MakeBoundingWalls();
     }
@@ -40,7 +40,7 @@ public class ProceduralGeneration : MonoBehaviour
         float tempY;
         int randomNumberHolder = 0;
 
-        if (tileCount.x < 1 || tileCount.y < 1 || tileCount.z < 1)
+        if (tileCount.x < 1 || tileCount.y < 1 || tileCount.z < 1) //if there is a zero then set the tilecount to defaults
         {
             Debug.LogWarning("WARNING: tileCounts were setup below usable values");
             tileCount = new Vector3(1, 1, 1);
@@ -59,7 +59,7 @@ public class ProceduralGeneration : MonoBehaviour
             {
                 for (int k = 0; k < tileCount.z; k++)
                 {
-                    if (simpleInstance)
+                    if (simpleInstance) //if this is used then no fancy code is used. it simply re-instances an object
                     {
                         tempY = Mathf.PerlinNoise(i, k);
 
@@ -76,7 +76,7 @@ public class ProceduralGeneration : MonoBehaviour
                         Instantiate(mesh, instancePos, Quaternion.identity);
                         
                         mesh.GetComponent<BasicMeshProperties>().changeType(randomNumberHolder);
-
+                        //note in this state all materials are re instanced and cause performance issues
                     }
                 }
             }
@@ -113,7 +113,7 @@ public class ProceduralGeneration : MonoBehaviour
             }
         }
     }
-    void clusterPass()
+    void clusterPass(bool cleanupPass)
     {
         GameObject[,] grid = MakeGridArray();
         int wallCount = 0;
@@ -124,6 +124,7 @@ public class ProceduralGeneration : MonoBehaviour
             {
                 wallCount = 0;
 
+                #region Checking adjacent walls
                 try
                 {
                     if (grid[i, j + 1].GetComponent<BasicMeshProperties>().objectType.Equals("wall"))
@@ -151,15 +152,22 @@ public class ProceduralGeneration : MonoBehaviour
                     if (grid[i - 1, j].GetComponent<BasicMeshProperties>().objectType.Equals("wall"))
                         wallCount++;
                 }
-                catch (System.Exception e) { }
+                catch (System.Exception e) { } 
+                #endregion
 
-                if (wallCount > 1)
+                if (wallCount > 1 && !cleanupPass)
                 {
                     grid[i, j].GetComponent<BasicMeshProperties>().objectType = "wall";
                     grid[i, j].GetComponent<MeshRenderer>().material = wallMaterial;
                     grid[i, j].GetComponent<Transform>().position = new Vector3(grid[i, j].GetComponent<Transform>().position.x, 1, grid[i, j].GetComponent<Transform>().position.z);
                 }
-                else if (wallCount == 0)
+                else if (wallCount == 0 && !cleanupPass)
+                {
+                    grid[i, j].GetComponent<BasicMeshProperties>().objectType = "floor";
+                    grid[i, j].GetComponent<MeshRenderer>().material = floorMaterial;
+                    grid[i, j].GetComponent<Transform>().position = new Vector3(grid[i, j].GetComponent<Transform>().position.x, 0, grid[i, j].GetComponent<Transform>().position.z);
+                }
+                else if (cleanupPass && (grid[i, j].GetComponent<MeshRenderer>().material.color == Color.red || grid[i, j].GetComponent<MeshRenderer>().material.color == Color.white)) //if cleanup pass is true then find reds and set them to white
                 {
                     grid[i, j].GetComponent<BasicMeshProperties>().objectType = "floor";
                     grid[i, j].GetComponent<MeshRenderer>().material = floorMaterial;
@@ -242,15 +250,21 @@ public class ProceduralGeneration : MonoBehaviour
 
             if (Input.GetKeyDown("[2]"))
             {
-                clusterPass();
+                clusterPass(false);
                 Debug.Log("pass complete");
             }
 
             if (Input.GetKeyDown("[3]"))
             {
+                clusterPass(true);
+            }
+
+            if (Input.GetKeyDown("[4]"))
+            {
                 MakeBoundingWalls();
                 Debug.Log("walls generated");
             }
+
 
             if (Input.GetKeyDown("[5]"))
             {
