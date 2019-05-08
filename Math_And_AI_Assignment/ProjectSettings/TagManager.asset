@@ -5,6 +5,9 @@ TagManager:
   serializedVersion: 2
   tags:
   - ProceduralTile
+  - ProceduralGenerationTile
+  - BulletPlayer
+  - BulletNPC
   layers:
   - Default
   - TransparentFX

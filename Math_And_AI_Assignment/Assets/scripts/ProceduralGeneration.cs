@@ -83,6 +83,10 @@ public class ProceduralGeneration : MonoBehaviour
         }
     }
 
+    /**
+     * get an array of all tile objects and pack them into a 2D array
+     * and return it back 
+     */
     GameObject[,] MakeGridArray()
     {
         GameObject[] tiles = GameObject.FindGameObjectsWithTag("ProceduralTile");
@@ -96,6 +100,10 @@ public class ProceduralGeneration : MonoBehaviour
         return grid;
     }
 
+    /**
+     * go through the tiles and if it is at the the edge
+     * of the grid then make it a wall
+     */
     void MakeBoundingWalls()
     {
         GameObject[,] grid = MakeGridArray();
@@ -106,8 +114,7 @@ public class ProceduralGeneration : MonoBehaviour
             {
                 if (i == 0 || i == (tileCount.x - 1) || j == 0 || j == (tileCount.z - 1))
                 {
-                    grid[i, j].GetComponent<BasicMeshProperties>().objectType = "wall";
-                    grid[i, j].GetComponent<MeshRenderer>().material = wallMaterial;
+                    grid[i, j].GetComponent<BasicMeshProperties>().setType("borderWall");
                     grid[i, j].GetComponent<Transform>().position = new Vector3(grid[i, j].GetComponent<Transform>().position.x, 1, grid[i, j].GetComponent<Transform>().position.z);
                 }
             }
@@ -155,22 +162,21 @@ public class ProceduralGeneration : MonoBehaviour
                 catch (System.Exception e) { } 
                 #endregion
 
-                if (wallCount > 1 && !cleanupPass)
+                if (wallCount > 1 && !cleanupPass) //setting type to wall if there are 2 or more adjacent walls to expand out wall clusters
                 {
-                    grid[i, j].GetComponent<BasicMeshProperties>().objectType = "wall";
-                    grid[i, j].GetComponent<MeshRenderer>().material = wallMaterial;
+                    grid[i, j].GetComponent<BasicMeshProperties>().setType("wall");
                     grid[i, j].GetComponent<Transform>().position = new Vector3(grid[i, j].GetComponent<Transform>().position.x, 1, grid[i, j].GetComponent<Transform>().position.z);
                 }
                 else if (wallCount == 0 && !cleanupPass)
                 {
-                    grid[i, j].GetComponent<BasicMeshProperties>().objectType = "floor";
-                    grid[i, j].GetComponent<MeshRenderer>().material = floorMaterial;
+                    grid[i, j].GetComponent<BasicMeshProperties>().setType("floor");
                     grid[i, j].GetComponent<Transform>().position = new Vector3(grid[i, j].GetComponent<Transform>().position.x, 0, grid[i, j].GetComponent<Transform>().position.z);
                 }
-                else if (cleanupPass && (grid[i, j].GetComponent<MeshRenderer>().material.color == Color.red || grid[i, j].GetComponent<MeshRenderer>().material.color == Color.white)) //if cleanup pass is true then find reds and set them to white
+                //if cleanup pass is true then find small clusters of red and make them floors to clean up floorspace
+                else if (cleanupPass && (grid[i, j].GetComponent<MeshRenderer>().material.color == Color.red && wallCount < 2) ) 
                 {
-                    grid[i, j].GetComponent<BasicMeshProperties>().objectType = "floor";
-                    grid[i, j].GetComponent<MeshRenderer>().material = floorMaterial;
+                    Debug.Log("hit");
+                    grid[i, j].GetComponent<BasicMeshProperties>().setType("floor");
                     grid[i, j].GetComponent<Transform>().position = new Vector3(grid[i, j].GetComponent<Transform>().position.x, 0, grid[i, j].GetComponent<Transform>().position.z);
                 }
             }
@@ -186,6 +192,7 @@ public class ProceduralGeneration : MonoBehaviour
             Destroy(item);
         }
     }
+
 
     void spawnPlayer()
     {
@@ -264,7 +271,6 @@ public class ProceduralGeneration : MonoBehaviour
                 MakeBoundingWalls();
                 Debug.Log("walls generated");
             }
-
 
             if (Input.GetKeyDown("[5]"))
             {
