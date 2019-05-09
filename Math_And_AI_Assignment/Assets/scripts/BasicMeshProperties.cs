@@ -15,7 +15,7 @@ public class BasicMeshProperties : MonoBehaviour
 
     private int[] totalPathCost;
     private int[] actualPathCost;
-    private int[] heuristicPathCost;
+    private int[] heuristicCostEstimate;
     private double[] visualHeuristicPath;
     // Use this for initialization
     void Start()
@@ -23,23 +23,38 @@ public class BasicMeshProperties : MonoBehaviour
         mesh = gameObject.GetComponent<MeshRenderer>();
         totalPathCost = new int[numberOfEnemies];
         actualPathCost = new int[numberOfEnemies];
-        heuristicPathCost = new int[numberOfEnemies];
+        heuristicCostEstimate = new int[numberOfEnemies];
         visualHeuristicPath = new double[numberOfEnemies];
     }
 
-    public int getTotalPathCost(int index)
+    public int getFTotalPathCost(int index)
     {
         return totalPathCost[index];
     }
 
-    public int getActualPathCost(int index)
+    public void setFTotalPathCost(int index, int value)
+    {
+        totalPathCost[index] = value;
+    }
+
+    public int getGActualPathCost(int index)
     {
         return actualPathCost[index];
     }
 
-    public int getHeuristicPathCost(int index)
+    public void setGActualPathCost(int index, int value)
     {
-        return heuristicPathCost[index];
+        actualPathCost[index] = value;
+    }
+
+    public int getHHeuristicCostEstimate(int index)
+    {
+        return heuristicCostEstimate[index];
+    }
+
+    public void setHHeuristicCostEstimate(int index, int value)
+    {
+        heuristicCostEstimate[index] = value;
     }
 
     public double getVisualHeuristic(int index)
@@ -47,6 +62,10 @@ public class BasicMeshProperties : MonoBehaviour
         return visualHeuristicPath[index];
     }
 
+    public Vector3 getPosition()
+    {
+        return GetComponentInParent<Transform>().position;
+    }
     void Update()
     {
         if (checkForCollisions)

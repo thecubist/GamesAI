@@ -6,6 +6,133 @@ using System;
 
 public class Pathfinder : MonoBehaviour
 {
+    public ProceduralGeneration mapManager; //the class that contains the map data
+    public int NPCIndex;
+    void A_Star(Vector3 start, Vector3 goal)
+    {
+        #region Declarations
+        GameObject[,] map = mapManager.MakeGridArray(); //a 2d array that represents the map
+        Vector3 lastCheckedNode;
+        BasicMeshProperties[] openSet = new BasicMeshProperties[8]; //nodes that are currently being evaluated
+
+        ArrayList closedSet;
+        //BasicMeshProperties[] closedSet; //nodes that have already been checked 
+        BasicMeshProperties[] cameFrom;
+        #endregion
+
+        openSet[0] = map[(int)start.x, (int)start.z].GetComponent<BasicMeshProperties>(); //setting the openSet to start as it is still currently known
+        openSet[0].setGActualPathCost(NPCIndex, 0); //setting the start node to 0
+        openSet[0].setHHeuristicCostEstimate(NPCIndex, heuristicCostEstimate(start, goal)); //for first node only heuristic value can be given
+
+        while (openSet != null || openSet.Length > 0) //if array is not empty
+        {
+            int score = 10000;
+            int currentLowestCostOpenSetIndex = 0;
+
+            for (int i = 0; i < openSet.Length; i++) //find lowest cost
+            {
+                if (openSet[i].getFTotalPathCost(NPCIndex) < score)
+                {
+                    currentLowestCostOpenSetIndex = i;
+                }
+            }
+
+            if (openSet[currentLowestCostOpenSetIndex].getPosition() == goal)
+            {
+                Debug.Log("Path found");
+                return;
+            }
+            else
+            {
+                
+                removeFromArray(openSet, openSet[currentLowestCostOpenSetIndex]);
+                
+            }
+        }
+    }
+
+    int heuristicCostEstimate(Vector3 start, Vector3 goal)
+    {
+        return 0;
+    }
+
+    //delete a specific element from an array
+    void removeFromArray(BasicMeshProperties[] openSet, BasicMeshProperties current)
+    {
+        // Could use indexOf here instead to be more efficient
+        for (int i = openSet.Length - 1; i >= 0; i--)
+        {
+            if (openSet[i] == current)
+            {
+                openSet = openSet.Where((source, index) => index != i).ToArray();
+            }
+        }
+    }
+
+    /*function A_Star(start, goal)
+    // The set of nodes already evaluated
+    closedSet := {}
+
+    // The set of currently discovered nodes that are not evaluated yet.
+    // Initially, only the start node is known.
+    openSet := {start
+}
+
+// For each node, which node it can most efficiently be reached from.
+// If a node can be reached from many nodes, cameFrom will eventually contain the
+// most efficient previous step.
+cameFrom := an empty map
+
+// For each node, the cost of getting from the start node to that node.
+gScore := map with default value of Infinity
+
+// The cost of going from start to start is zero.
+gScore[start] := 0
+
+    // For each node, the total cost of getting from the start node to the goal
+    // by passing by that node. That value is partly known, partly heuristic.
+    fScore := map with default value of Infinity
+
+    // For the first node, that value is completely heuristic.
+    fScore[start] := heuristic_cost_estimate(start, goal)
+
+    while openSet is not empty
+        current := the node in openSet having the lowest fScore[] value
+        if current = goal
+            return reconstruct_path(cameFrom, current)
+
+        openSet.Remove(current)
+        closedSet.Add(current)
+
+        for each neighbor of current
+            if neighbor in closedSet
+                continue		// Ignore the neighbor which is already evaluated.
+
+            // The distance from start to a neighbor
+            tentative_gScore := gScore[current] + dist_between(current, neighbor)
+
+            if neighbor not in openSet	// Discover a new node
+                openSet.Add(neighbor)
+            else if tentative_gScore >= gScore[neighbor]
+                continue
+
+            // This path is the best until now. Record it!
+            cameFrom[neighbor] := current
+            gScore[neighbor] := tentative_gScore
+            fScore[neighbor] := gScore[neighbor] + heuristic_cost_estimate(neighbor, goal)*/
+}
+
+
+
+
+
+
+
+
+
+
+
+
     /*public Vector3 start;
     public Vector3 end;
     public bool allowDiagonals = true;
@@ -184,56 +311,3 @@ public class Pathfinder : MonoBehaviour
             }
         }
     }*/
-
-    /*function A_Star(start, goal)
-    // The set of nodes already evaluated
-    closedSet := {}
-
-    // The set of currently discovered nodes that are not evaluated yet.
-    // Initially, only the start node is known.
-    openSet := {start
-}
-
-// For each node, which node it can most efficiently be reached from.
-// If a node can be reached from many nodes, cameFrom will eventually contain the
-// most efficient previous step.
-cameFrom := an empty map
-
-// For each node, the cost of getting from the start node to that node.
-gScore := map with default value of Infinity
-
-// The cost of going from start to start is zero.
-gScore[start] := 0
-
-    // For each node, the total cost of getting from the start node to the goal
-    // by passing by that node. That value is partly known, partly heuristic.
-    fScore := map with default value of Infinity
-
-    // For the first node, that value is completely heuristic.
-    fScore[start] := heuristic_cost_estimate(start, goal)
-
-    while openSet is not empty
-        current := the node in openSet having the lowest fScore[] value
-        if current = goal
-            return reconstruct_path(cameFrom, current)
-
-        openSet.Remove(current)
-        closedSet.Add(current)
-
-        for each neighbor of current
-            if neighbor in closedSet
-                continue		// Ignore the neighbor which is already evaluated.
-
-            // The distance from start to a neighbor
-            tentative_gScore := gScore[current] + dist_between(current, neighbor)
-
-            if neighbor not in openSet	// Discover a new node
-                openSet.Add(neighbor)
-            else if tentative_gScore >= gScore[neighbor]
-                continue
-
-            // This path is the best until now. Record it!
-            cameFrom[neighbor] := current
-            gScore[neighbor] := tentative_gScore
-            fScore[neighbor] := gScore[neighbor] + heuristic_cost_estimate(neighbor, goal)*/
-}
