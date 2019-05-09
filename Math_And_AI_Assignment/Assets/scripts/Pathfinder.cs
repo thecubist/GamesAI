@@ -12,15 +12,13 @@ public class Pathfinder : MonoBehaviour
     {
         #region Declarations
         GameObject[,] map = mapManager.MakeGridArray(); //a 2d array that represents the map
-        Vector3 lastCheckedNode;
-        BasicMeshProperties[] openSet = new BasicMeshProperties[8]; //nodes that are currently being evaluated
 
-        ArrayList closedSet;
-        //BasicMeshProperties[] closedSet; //nodes that have already been checked 
-        BasicMeshProperties[] cameFrom;
+        PathfinderGrid grid = new PathfinderGrid();
         #endregion
 
-        openSet[0] = map[(int)start.x, (int)start.z].GetComponent<BasicMeshProperties>(); //setting the openSet to start as it is still currently known
+        grid.mapArray = map; //assigning the map reference within the grid
+
+        /*openSet[0] = map[(int)start.x, (int)start.z].GetComponent<BasicMeshProperties>(); //setting the openSet to start as it is still currently known
         openSet[0].setGActualPathCost(NPCIndex, 0); //setting the start node to 0
         openSet[0].setHHeuristicCostEstimate(NPCIndex, heuristicCostEstimate(start, goal)); //for first node only heuristic value can be given
 
@@ -48,7 +46,7 @@ public class Pathfinder : MonoBehaviour
                 removeFromArray(openSet, openSet[currentLowestCostOpenSetIndex]);
                 
             }
-        }
+        }*/
     }
 
     int heuristicCostEstimate(Vector3 start, Vector3 goal)

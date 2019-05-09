@@ -58,7 +58,7 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RenderingLayerMask: 4294967295
   m_Materials:
-  - {fileID: 2100000, guid: 3c8600be54e7eed4cb0d038a0f2d846b, type: 2}
+  - {fileID: 15303, guid: 0000000000000000f000000000000000, type: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -110,7 +110,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   objectType: floor
   materials:
-  - {fileID: 2100000, guid: 3c8600be54e7eed4cb0d038a0f2d846b, type: 2}
+  - {fileID: 15303, guid: 0000000000000000f000000000000000, type: 0}
   - {fileID: 2100000, guid: 210be99cf4674444c8902f0f041536f4, type: 2}
   - {fileID: 2100000, guid: 604507034ad50d344a19173f422cf3f1, type: 2}
   - {fileID: 2100000, guid: 19414effb958eed418c9a0eb3ba1aede, type: 2}
