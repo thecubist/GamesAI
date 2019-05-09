@@ -69,11 +69,12 @@ public class ProceduralGeneration : MonoBehaviour
                     else
                     {
                         float yPosition = j * tilePosMult.y;
+
                         randomNumberHolder = Random.Range(0, 8);
 
                         instancePos = new Vector3(i * tilePosMult.x, yPosition, k * tilePosMult.z);
 
-                        Instantiate(mesh, instancePos, Quaternion.identity);
+                        Instantiate(mesh, new Vector3(i,j,k), Quaternion.identity);
                         
                         mesh.GetComponent<BasicMeshProperties>().changeType(randomNumberHolder);
                         //note in this state all materials are re instanced and cause performance issues
@@ -87,7 +88,7 @@ public class ProceduralGeneration : MonoBehaviour
      * get an array of all tile objects and pack them into a 2D array
      * and return it back 
      */
-    GameObject[,] MakeGridArray()
+    public GameObject[,] MakeGridArray()
     {
         GameObject[] tiles = GameObject.FindGameObjectsWithTag("ProceduralTile");
         GameObject[,] grid = new GameObject[(int)tileCount.x, (int)tileCount.z];
@@ -192,6 +193,7 @@ public class ProceduralGeneration : MonoBehaviour
             Destroy(item);
         }
     }
+
 
 
     void spawnPlayer()

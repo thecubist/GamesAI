@@ -4,15 +4,47 @@ using UnityEngine;
 
 public class BasicMeshProperties : MonoBehaviour
 {
+    [Header("Base properties")]
     public string objectType;
     public Material[] materials = new Material[5];
     MeshRenderer mesh;
-    bool checkForCollisions; 
+    bool checkForCollisions;
 
+    [Header("Pathfinder properties")]
+    public int numberOfEnemies;
+
+    private int[] totalPathCost;
+    private int[] actualPathCost;
+    private int[] heuristicPathCost;
+    private double[] visualHeuristicPath;
     // Use this for initialization
     void Start()
     {
         mesh = gameObject.GetComponent<MeshRenderer>();
+        totalPathCost = new int[numberOfEnemies];
+        actualPathCost = new int[numberOfEnemies];
+        heuristicPathCost = new int[numberOfEnemies];
+        visualHeuristicPath = new double[numberOfEnemies];
+    }
+
+    public int getTotalPathCost(int index)
+    {
+        return totalPathCost[index];
+    }
+
+    public int getActualPathCost(int index)
+    {
+        return actualPathCost[index];
+    }
+
+    public int getHeuristicPathCost(int index)
+    {
+        return heuristicPathCost[index];
+    }
+
+    public double getVisualHeuristic(int index)
+    {
+        return visualHeuristicPath[index];
     }
 
     void Update()
