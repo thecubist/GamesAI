@@ -8,16 +8,39 @@ public class PathfinderGrid : MonoBehaviour
 
     private List<Point> openSet;
     private List<Point> closedSet;
-    private Point current; 
 
-    Point[,] points;
+    public  Point current; 
+    public Point[,] points;
+
     // Use this for initialization
     void Start ()
     {
 		
 	}
 
-    void createPointsArray()
+    public void loadOpenSet()
+    {
+        openSet.Clear(); //clearing the open set
+
+        if (current.moveLocations.front)
+            openSet.Add(current.neighbours[0]);
+
+        if (current.moveLocations.back)
+            openSet.Add(current.neighbours[1]);
+
+        if (current.moveLocations.left)
+            openSet.Add(current.neighbours[2]);
+
+        if (current.moveLocations.right)
+            openSet.Add(current.neighbours[3]);
+    }
+
+    public List<Point> getOpenSet()
+    {
+        return openSet;
+    }
+
+    public void createPointsArray()
     {
         if (mapArray != null) //ensuring that the array to be used has been assigned
         {
@@ -39,29 +62,12 @@ public class PathfinderGrid : MonoBehaviour
                 for (int z = 0; z < points.GetLength(1); z++)
                 {
                     #region Checking for neighbours
-                    try //left neighbour
-                    {
-                        if (mapArray[x - 1, z].GetComponent<BasicMeshProperties>().objectType.Equals("floor"))
-                        {
-                            points[x, z].neighbours[0] = points[x - 1, z];
-                        }
-                    }
-                    catch (System.Exception e) { }
-
-                    try //right neighbour
-                    {
-                        if (mapArray[x + 1, z].GetComponent<BasicMeshProperties>().objectType.Equals("floor"))
-                        {
-                            points[x, z].neighbours[1] = points[x + 1, z];
-                        }
-                    }
-                    catch (System.Exception e) { }
-
                     try //front neighbour
                     {
                         if (mapArray[x, z + 1].GetComponent<BasicMeshProperties>().objectType.Equals("floor"))
                         {
-                            points[x, z].neighbours[2] = points[x, z+1];
+                            points[x, z].neighbours[0] = points[x, z + 1];
+                            points[x, z].moveLocations.front = true;
                         }
                     }
                     catch (System.Exception e) { }
@@ -70,7 +76,29 @@ public class PathfinderGrid : MonoBehaviour
                     {
                         if (mapArray[x, z - 1].GetComponent<BasicMeshProperties>().objectType.Equals("floor"))
                         {
-                            points[x, z].neighbours[3] = points[x, z-1];
+                            points[x, z].neighbours[1] = points[x, z - 1];
+                            points[x, z].moveLocations.back = true;
+                        }
+                    }
+                    catch (System.Exception e) { }
+
+
+                    try //left neighbour
+                    {
+                        if (mapArray[x - 1, z].GetComponent<BasicMeshProperties>().objectType.Equals("floor"))
+                        {
+                            points[x, z].neighbours[2] = points[x - 1, z];
+                            points[x, z].moveLocations.left = true;
+                        }
+                    }
+                    catch (System.Exception e) { }
+
+                    try //right neighbour
+                    {
+                        if (mapArray[x + 1, z].GetComponent<BasicMeshProperties>().objectType.Equals("floor"))
+                        {
+                            points[x, z].neighbours[3] = points[x + 1, z];
+                            points[x, z].moveLocations.right = true;
                         }
                     }
                     catch (System.Exception e) { }

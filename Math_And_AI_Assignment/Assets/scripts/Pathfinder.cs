@@ -17,6 +17,20 @@ public class Pathfinder : MonoBehaviour
         #endregion
 
         grid.mapArray = map; //assigning the map reference within the grid
+        grid.createPointsArray();
+
+        grid.current = grid.points[(int)start.x, (int)start.z];
+        grid.loadOpenSet();
+
+        Point bestNodeFound = new Point();
+
+        foreach (Point node in grid.getOpenSet())
+        {
+            if (dotProduct(node.getPosition(), goal) < dotProduct(bestNodeFound.getPosition(),goal))
+            {
+                bestNodeFound = node;
+            }
+        }
 
         /*openSet[0] = map[(int)start.x, (int)start.z].GetComponent<BasicMeshProperties>(); //setting the openSet to start as it is still currently known
         openSet[0].setGActualPathCost(NPCIndex, 0); //setting the start node to 0
@@ -49,6 +63,11 @@ public class Pathfinder : MonoBehaviour
         }*/
     }
 
+    float dotProduct(Vector3 vec1, Vector3 vec2)
+    {
+        return (float)Math.Sqrt((vec1 - vec2).magnitude);
+    }
+
     int heuristicCostEstimate(Vector3 start, Vector3 goal)
     {
         return 0;
@@ -66,7 +85,6 @@ public class Pathfinder : MonoBehaviour
             }
         }
     }
-
     /*function A_Star(start, goal)
     // The set of nodes already evaluated
     closedSet := {}
