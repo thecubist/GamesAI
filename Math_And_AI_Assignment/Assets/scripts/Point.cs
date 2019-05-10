@@ -15,7 +15,7 @@ public class Point : MonoBehaviour
     public float Xpos { get; set; }
     public float Ypos { get; set; }
     public float Zpos { get; set; }
-
+    public bool visited { get; set; }
 
     // Use this for initialization
     void Start ()
@@ -25,6 +25,7 @@ public class Point : MonoBehaviour
         moveLocations.back = false;
         moveLocations.left = false;
         moveLocations.right = false;
+        visited = false;
     }
 
     public Vector3 getPosition()
@@ -33,7 +34,8 @@ public class Point : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update () {
+    void Update ()
+    {
 		
 	}
 }
