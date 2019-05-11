@@ -143,7 +143,7 @@ public class BasicMeshProperties : MonoBehaviour
         else if (type.Equals("wall"))
         {
             mesh.material = materials[1];
-            mesh.transform.localScale = new Vector3(1f, 1f, 1f);
+            mesh.transform.localScale = new Vector3(1f, 2f, 1f);
         }
         else if (type.Equals("regenPoint"))
         {

@@ -23,15 +23,7 @@ public class ProceduralGeneration : MonoBehaviour
             clusterPass(false);
         }
         MakeBoundingWalls();
-    }
-
-    void Wait(int seconds)
-    {
-        System.DateTime unpauseTime = System.DateTime.Now.AddSeconds(seconds);
-        while (System.DateTime.Now < unpauseTime)
-        {
-            Debug.Log("waiting");
-        }
+        spawnPlayer();
     }
 
     void RegenerateMap()
