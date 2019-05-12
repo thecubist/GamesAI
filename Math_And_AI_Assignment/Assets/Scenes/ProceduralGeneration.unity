@@ -211,6 +211,7 @@ MonoBehaviour:
   DEVMODE: 1
   floorMaterial: {fileID: 2100000, guid: 3c8600be54e7eed4cb0d038a0f2d846b, type: 2}
   wallMaterial: {fileID: 2100000, guid: 8da16facb8c63f94f87029b35fbcda47, type: 2}
+  collisionCheckOverride: 1
 --- !u!4 &858746475
 Transform:
   m_ObjectHideFlags: 0

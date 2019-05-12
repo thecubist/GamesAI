@@ -8,7 +8,8 @@ public class BasicMeshProperties : MonoBehaviour
     public string objectType;
     public Material[] materials = new Material[5];
     MeshRenderer mesh;
-    bool checkForCollisions;
+    private bool checkForCollisions;
+    public bool collisionCheckOverride = false;
 
     [Header("Pathfinder properties")]
     public int numberOfEnemies;
@@ -68,7 +69,7 @@ public class BasicMeshProperties : MonoBehaviour
     }
     void Update()
     {
-        if (checkForCollisions)
+        if (checkForCollisions && !collisionCheckOverride)
         {
             boxToPointCollision();
         }
@@ -100,10 +101,42 @@ public class BasicMeshProperties : MonoBehaviour
         GameObject[] playerBullets = GameObject.FindGameObjectsWithTag("BulletPlayer");
         GameObject[] npcBullets = GameObject.FindGameObjectsWithTag("BulletPlayer");
 
+        Vector3 bulletPos;
+        Vector3 minPoint = GetComponent<BoxCollider>().bounds.min;
+        Vector3 maxPoint = GetComponent<BoxCollider>().bounds.max;
+
         foreach (GameObject bullet in playerBullets)
         {
-            //if(bullet.transform.position.x )
+            bulletPos = bullet.transform.position;
+           
+            if (bulletPos.x >= minPoint.x && bulletPos.x <= maxPoint.x)
+            {
+                if (bulletPos.y >= minPoint.y && bulletPos.y <= maxPoint.y)
+                {
+                    if (bulletPos.z >= minPoint.z && bulletPos.z <= maxPoint.z)
+                    {
+                        Destroy(bullet.gameObject);
+                    }
+                }
+            }
         }
+
+        foreach (GameObject bullet in npcBullets)
+        {
+            bulletPos = bullet.transform.position;
+
+            if (bulletPos.x >= minPoint.x && bulletPos.x <= maxPoint.x)
+            {
+                if (bulletPos.y >= minPoint.y && bulletPos.y <= maxPoint.y)
+                {
+                    if (bulletPos.z >= minPoint.z && bulletPos.z <= maxPoint.z)
+                    {
+                        Destroy(bullet.gameObject);
+                    }
+                }
+            }
+        }
+
 
         return false;
     }
@@ -139,31 +172,38 @@ public class BasicMeshProperties : MonoBehaviour
         {
             mesh.material = materials[0];
             mesh.transform.localScale = new Vector3(1f, 1f, 1f);
+            checkForCollisions = false;
         }
         else if (type.Equals("wall"))
         {
             mesh.material = materials[1];
             mesh.transform.localScale = new Vector3(1f, 2f, 1f);
+            checkForCollisions = true;
         }
         else if (type.Equals("regenPoint"))
         {
             mesh.material = materials[2];
             mesh.transform.localScale = new Vector3(1f, 100f, 1f);
+            checkForCollisions = true;
         }
         else if (type.Equals("ammoPoint"))
         {
             mesh.material = materials[3];
             mesh.transform.localScale = new Vector3(1f, 100f, 1f);
+            checkForCollisions = true;
         }
         else if (type.Equals("controlPoint"))
         {
             mesh.material = materials[4];
             mesh.transform.localScale = new Vector3(1f, 100f, 1f);
+            checkForCollisions = true;
         }
         else if (type.Equals("borderWall"))
         {
             mesh.material = materials[5];
             mesh.transform.localScale = new Vector3(1f, 2f, 1f);
+
+            checkForCollisions = true;
         }
         else
         {

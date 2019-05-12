@@ -20,6 +20,7 @@ public class EnemyController : MonoBehaviour
     private GameObject playerRef;
     private float distanceToPlayer = 0;
     private float health = 100;
+    private bool hasGivenKill;
 
     [Header("Basic Variables")]
     public float detectionRange = 10;
@@ -30,6 +31,7 @@ public class EnemyController : MonoBehaviour
     public float fireRate = 2;
     public GameObject bullet;
     public float boundingCylinderSize = 1;
+    public float bulletSpeed = 6.0f;
     [Header("UI Variables")]
     public Text stateTextUI;
     public Text distanceTextUI;
@@ -96,6 +98,7 @@ public class EnemyController : MonoBehaviour
                 Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.forward) * ray.distance, Color.magenta);
 
                 moveTowardsPlayer(false);
+                Shoot();
             }
             else if (currentState == State.pathfinding)
             {
@@ -105,6 +108,13 @@ public class EnemyController : MonoBehaviour
             {
                 gameObject.GetComponent<BoxCollider>().enabled = false;
                 gameObject.GetComponentInChildren<CapsuleCollider>().enabled = false;
+
+                if (!hasGivenKill)
+                {
+                    playerRef.GetComponent<PlayerController>().addKill();
+                    hasGivenKill = true;
+                }
+
                 Destroy(gameObject, 5.0f);
             }
         }
@@ -196,6 +206,23 @@ public class EnemyController : MonoBehaviour
             }
         }
     }
+
+    void Shoot()
+    {
+        //Transform aimLocation = shootPosition.transform.LookAt(playerRef.transform);
+        //instance the object locally
+        //Quaternion shootAngle = 
+        //shootPosition.transform.LookAt(playerRef.transform.position);
+        //shootPosition.transform.eulerAngles = new Vector3(shootPosition.transform.eulerAngles.x, 0, 0);
+        GameObject bulletInst = (GameObject)Instantiate(bullet, shootPosition.position, shootPosition.rotation);
+        
+        //move the bullet
+        bulletInst.GetComponent<Rigidbody>().velocity = bulletInst.transform.up * bulletSpeed;
+
+        //destroy the bullet 
+        Destroy(bulletInst, 2);
+    }
+
     /**
      * prevents code running until the started amount of time passes
      */

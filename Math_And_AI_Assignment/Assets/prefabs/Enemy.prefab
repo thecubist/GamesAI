@@ -864,8 +864,9 @@ MonoBehaviour:
   moveSpeed: 0.07
   wanderSpeedMult: 30
   fireRate: 2
-  bullet: {fileID: 0}
+  bullet: {fileID: 1770965365721938, guid: a154e2ca8e8106845bbcb4bce89a35bb, type: 2}
   boundingCylinderSize: 1
+  bulletSpeed: 6
   stateTextUI: {fileID: 114819780217201138}
   distanceTextUI: {fileID: 114208527840623224}
   healthTextUI: {fileID: 114788708884737170}

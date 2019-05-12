@@ -14,7 +14,7 @@ public class ProceduralGeneration : MonoBehaviour
 
     public Material floorMaterial;
     public Material wallMaterial;
-
+    public bool collisionCheckOverride = false;
 	void Awake()
     {
         RegenerateMap();
@@ -24,6 +24,16 @@ public class ProceduralGeneration : MonoBehaviour
         }
         MakeBoundingWalls();
         spawnPlayer();
+
+        if (collisionCheckOverride)
+        {
+            GameObject[] tiles = GameObject.FindGameObjectsWithTag("ProceduralTile");
+
+            foreach (var tile in tiles)
+            {
+                tile.GetComponent<BasicMeshProperties>().collisionCheckOverride = true;
+            }
+        }
     }
 
     void RegenerateMap()
@@ -269,6 +279,26 @@ public class ProceduralGeneration : MonoBehaviour
             if (Input.GetKeyDown("[5]"))
             {
                 spawnPlayer();
+            }
+
+            if (Input.GetKeyDown("[7]"))
+            {
+                GameObject[] tiles = GameObject.FindGameObjectsWithTag("ProceduralTile");
+
+                if (collisionCheckOverride)
+                {
+                    foreach (var tile in tiles)
+                    {
+                        tile.GetComponent<BasicMeshProperties>().collisionCheckOverride = true;
+                    }
+                }
+                else
+                {
+                    foreach (var tile in tiles)
+                    {
+                        tile.GetComponent<BasicMeshProperties>().collisionCheckOverride = false;
+                    }
+                }
             }
         }
 	}

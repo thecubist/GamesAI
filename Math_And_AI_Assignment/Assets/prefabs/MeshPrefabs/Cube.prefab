@@ -116,4 +116,5 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 19414effb958eed418c9a0eb3ba1aede, type: 2}
   - {fileID: 2100000, guid: 534221e38c1a05544a4aff5b245926e1, type: 2}
   - {fileID: 2100000, guid: f1579a7ec1125be46ae29d2f0b713461, type: 2}
+  collisionCheckOverride: 0
   numberOfEnemies: 0
