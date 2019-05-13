@@ -8,6 +8,7 @@ TagManager:
   - ProceduralGenerationTile
   - BulletPlayer
   - BulletNPC
+  - MapGenerator
   layers:
   - Default
   - TransparentFX

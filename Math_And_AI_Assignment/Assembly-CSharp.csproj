@@ -54,6 +54,7 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\scripts\BasicMeshProperties.cs" />
+     <Compile Include="Assets\scripts\ButtonController.cs" />
      <Compile Include="Assets\scripts\EnemyController.cs" />
      <Compile Include="Assets\scripts\Pathfinder.cs" />
      <Compile Include="Assets\scripts\PathfinderGrid.cs" />

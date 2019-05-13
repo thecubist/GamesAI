@@ -21,6 +21,10 @@ public class EnemyController : MonoBehaviour
     private float distanceToPlayer = 0;
     private float health = 100;
     private bool hasGivenKill;
+    private GameObject mapRef;
+
+    private System.DateTime shootPauseTime = System.DateTime.Now;
+    private System.DateTime wanderPauseTime = System.DateTime.Now;
 
     [Header("Basic Variables")]
     public float detectionRange = 10;
@@ -32,6 +36,7 @@ public class EnemyController : MonoBehaviour
     public GameObject bullet;
     public float boundingCylinderSize = 1;
     public float bulletSpeed = 6.0f;
+
     [Header("UI Variables")]
     public Text stateTextUI;
     public Text distanceTextUI;
@@ -41,6 +46,7 @@ public class EnemyController : MonoBehaviour
 	void Start ()
     {
         playerRef = GameObject.FindGameObjectWithTag("Player");
+        mapRef = GameObject.FindGameObjectWithTag("MapGenerator");
 
         if (playerRef == null)
             Debug.Log("Player was not found");
@@ -61,7 +67,6 @@ public class EnemyController : MonoBehaviour
 
             if (currentState == State.idle)
             {
-                //Wait(2);
             }
             else if (currentState == State.wandering)
             {
@@ -82,6 +87,7 @@ public class EnemyController : MonoBehaviour
                         gameObject.GetComponent<Rigidbody>().velocity = new Vector3(0,0,0);
                         randRot.y = UnityEngine.Random.Range(10f, 360f);
                         transform.eulerAngles = randRot;
+                        wanderPauseTime = System.DateTime.Now.AddSeconds(UnityEngine.Random.Range(0,4));
                     }
                 }
             }
@@ -113,6 +119,7 @@ public class EnemyController : MonoBehaviour
                 {
                     playerRef.GetComponent<PlayerController>().addKill();
                     hasGivenKill = true;
+                    mapRef.GetComponent<ProceduralGeneration>().spawnNPC();
                 }
 
                 Destroy(gameObject, 5.0f);
@@ -140,7 +147,17 @@ public class EnemyController : MonoBehaviour
             }
             else
             {
-                currentState = State.wandering;
+
+                if (System.DateTime.Now > wanderPauseTime)
+                {
+
+                    currentState = State.wandering;
+                }
+                else
+                {
+                    currentState = State.idle; 
+                }
+                //currentState = State.wandering;
             }
         }
         else
@@ -174,7 +191,6 @@ public class EnemyController : MonoBehaviour
         if(move)
             gameObject.transform.position = Vector3.MoveTowards(gameObject.transform.position, playerRef.transform.position, moveSpeed);
     }
-
     /**
      * returns the dot product (distance) between 2 vectors that are passed to it
      */
@@ -209,18 +225,19 @@ public class EnemyController : MonoBehaviour
 
     void Shoot()
     {
-        //Transform aimLocation = shootPosition.transform.LookAt(playerRef.transform);
-        //instance the object locally
-        //Quaternion shootAngle = 
-        //shootPosition.transform.LookAt(playerRef.transform.position);
-        //shootPosition.transform.eulerAngles = new Vector3(shootPosition.transform.eulerAngles.x, 0, 0);
-        GameObject bulletInst = (GameObject)Instantiate(bullet, shootPosition.position, shootPosition.rotation);
-        
-        //move the bullet
-        bulletInst.GetComponent<Rigidbody>().velocity = bulletInst.transform.up * bulletSpeed;
+        if (System.DateTime.Now > shootPauseTime)
+        {
+            //Debug.Log("hit");
+            GameObject bulletInst = (GameObject)Instantiate(bullet, shootPosition.position, shootPosition.rotation);
 
-        //destroy the bullet 
-        Destroy(bulletInst, 2);
+            //move the bullet
+            bulletInst.GetComponent<Rigidbody>().velocity = bulletInst.transform.up * bulletSpeed;
+
+            //destroy the bullet 
+            Destroy(bulletInst, 2);
+
+            shootPauseTime = System.DateTime.Now.AddSeconds(fireRate);
+        }
     }
 
     /**
@@ -228,7 +245,8 @@ public class EnemyController : MonoBehaviour
      */
     void Wait(int seconds)
     {
-        System.DateTime unpauseTime = System.DateTime.Now.AddSeconds(seconds);
+        System.DateTime unpauseTime = System.DateTime.Now.AddSeconds(fireRate);
+
         while (System.DateTime.Now < unpauseTime)
         {
             Debug.Log("waiting");

@@ -11,6 +11,8 @@ public class PlayerController : MonoBehaviour
     private float health = 100;
     private int kills = 0;
     private int deaths = 0;
+    private Vector3 respawnPos;
+
     public float boundingCylinderSize = 1;
 
     public Text healthText;
@@ -19,11 +21,28 @@ public class PlayerController : MonoBehaviour
 
     Vector3 rotation = new Vector3(0,0,0);
 
+    void Awake()
+    {
+        respawnPos = gameObject.transform.position;
+        Debug.Log("player spawned at " + respawnPos);
+    }
     void Update()
     {
         inputControls();
         updateUI();
         checkForBulletCollisions();
+        checkForDeath();
+    }
+
+    void checkForDeath()
+    {
+        if (health < 0)
+        {
+            gameObject.transform.position = respawnPos;
+            health = 100;
+            deaths++;
+            Debug.Log("player died");
+        }
     }
 
     void updateUI()
@@ -95,6 +114,11 @@ public class PlayerController : MonoBehaviour
     public void addKill()
     {
         kills++;
+    }
+
+    public static void quit()
+    {
+        quit();
     }
 }
 

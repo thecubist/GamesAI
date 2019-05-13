@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,12 +10,16 @@ public class ProceduralGeneration : MonoBehaviour
     public GameObject mesh;
     public int clusterPassIterations = 2;
     public GameObject player;
+    public GameObject enemy;
+    public float enemySpawnDistanceFromPlayer = 10;
     public bool DEVMODE = true;
 
     public Material floorMaterial;
     public Material wallMaterial;
     public bool collisionCheckOverride = false;
-	void Awake()
+    public int numberOfNPCs = 5;
+
+    void Awake()
     {
         RegenerateMap();
         for (int i = 0; i < clusterPassIterations; i++)
@@ -24,18 +28,15 @@ public class ProceduralGeneration : MonoBehaviour
         }
         MakeBoundingWalls();
         spawnPlayer();
+        collisionOverride();
 
-        if (collisionCheckOverride)
+        for (int i = 0; i < numberOfNPCs; i++)
         {
-            GameObject[] tiles = GameObject.FindGameObjectsWithTag("ProceduralTile");
-
-            foreach (var tile in tiles)
-            {
-                tile.GetComponent<BasicMeshProperties>().collisionCheckOverride = true;
-            }
+            spawnNPC();
         }
     }
 
+    #region Map generation
     void RegenerateMap()
     {
         Vector3 instancePos; //used for defining where the next mesh is generated
@@ -72,18 +73,20 @@ public class ProceduralGeneration : MonoBehaviour
                     {
                         float yPosition = j * tilePosMult.y;
 
-                        randomNumberHolder = Random.Range(0, 8);
+                        randomNumberHolder = UnityEngine.Random.Range(0, 8);
 
                         instancePos = new Vector3(i * tilePosMult.x, yPosition, k * tilePosMult.z);
 
-                        Instantiate(mesh, new Vector3(i,j,k), Quaternion.identity);
-                        
+                        Instantiate(mesh, new Vector3(i, j, k), Quaternion.identity);
+
                         mesh.GetComponent<BasicMeshProperties>().changeType(randomNumberHolder);
                         //note in this state all materials are re instanced and cause performance issues
                     }
                 }
             }
         }
+
+        collisionOverride();
     }
 
     /**
@@ -97,6 +100,7 @@ public class ProceduralGeneration : MonoBehaviour
 
         foreach (GameObject tile in tiles)
         {
+            //NOTE SHOULD BE CHANGED TO COMPENSATE FOR BOUNDING BOX IF DIFFERENT SIZED MESHES ARE USED
             grid[(int)tile.GetComponent<Transform>().localPosition.x, (int)tile.GetComponent<Transform>().localPosition.z] = tile;
         }
 
@@ -123,6 +127,13 @@ public class ProceduralGeneration : MonoBehaviour
             }
         }
     }
+
+    /**
+     * iterate through each tile and check for adjacent tiles.
+     * if there are 2 or more tiles then set the tile to a 
+     * wall tile. if there is less than 2 adjacent walls then set 
+     * the tile to floor tile 
+     */
     void clusterPass(bool cleanupPass)
     {
         GameObject[,] grid = MakeGridArray();
@@ -162,7 +173,7 @@ public class ProceduralGeneration : MonoBehaviour
                     if (grid[i - 1, j].GetComponent<BasicMeshProperties>().objectType.Equals("wall"))
                         wallCount++;
                 }
-                catch (System.Exception e) { } 
+                catch (System.Exception e) { }
                 #endregion
 
                 if (wallCount > 1 && !cleanupPass) //setting type to wall if there are 2 or more adjacent walls to expand out wall clusters
@@ -175,8 +186,9 @@ public class ProceduralGeneration : MonoBehaviour
                     grid[i, j].GetComponent<BasicMeshProperties>().setType("floor");
                     grid[i, j].GetComponent<Transform>().position = new Vector3(grid[i, j].GetComponent<Transform>().position.x, 0, grid[i, j].GetComponent<Transform>().position.z);
                 }
+
                 //if cleanup pass is true then find small clusters of red and make them floors to clean up floorspace
-                else if (cleanupPass && (grid[i, j].GetComponent<MeshRenderer>().material.color == Color.red && wallCount < 2) ) 
+                else if (cleanupPass && (grid[i, j].GetComponent<MeshRenderer>().material.color == Color.red && wallCount < 2))
                 {
                     Debug.Log("hit");
                     grid[i, j].GetComponent<BasicMeshProperties>().setType("floor");
@@ -196,7 +208,75 @@ public class ProceduralGeneration : MonoBehaviour
         }
     }
 
+    void collisionOverride()
+    {
+        if (collisionCheckOverride)
+        {
+            GameObject[] tiles = GameObject.FindGameObjectsWithTag("ProceduralTile");
 
+            foreach (var tile in tiles)
+            {
+                tile.GetComponent<BasicMeshProperties>().collisionCheckOverride = true;
+            }
+        }
+    }
+    #endregion
+
+    #region Player and NPC spawning
+    public void spawnNPC()
+    {
+        GameObject[,] grid = MakeGridArray();
+        int floorCount = 0;
+
+        int startingXValue = UnityEngine.Random.Range(0, (int)tileCount.x);
+        int startingYValue = UnityEngine.Random.Range(0, (int)tileCount.y);
+
+        //Debug.Log("tiles" + tileCount);
+        //Debug.Log("start loc " + new Vector2(startingXValue,startingYValue));
+        for (int i = startingXValue; i < tileCount.x; i++)
+        {
+            for (int j = startingYValue; j < tileCount.z; j++)
+            {
+                floorCount = 0;
+
+                try
+                {
+                    if (grid[i, j + 1].GetComponent<BasicMeshProperties>().objectType.Equals("floor"))
+                        floorCount++;
+                }
+                catch (System.Exception e) { }
+
+
+                try
+                {
+                    if (grid[i, j - 1].GetComponent<BasicMeshProperties>().objectType.Equals("floor"))
+                        floorCount++;
+                }
+                catch (System.Exception e) { }
+
+                try
+                {
+                    if (grid[i + 1, j].GetComponent<BasicMeshProperties>().objectType.Equals("floor"))
+                        floorCount++;
+                }
+                catch (System.Exception e) { }
+
+                try
+                {
+                    if (grid[i - 1, j].GetComponent<BasicMeshProperties>().objectType.Equals("floor"))
+                        floorCount++;
+                }
+                catch (System.Exception e) { }
+
+                if (floorCount == 4 && dotProduct(new Vector3(i, 1.6f, j), player.transform.position, true) > enemySpawnDistanceFromPlayer)
+                {
+                    Instantiate(enemy, new Vector3(i, 1.6f, j), Quaternion.identity);
+                    Debug.Log("spawned enemy at " + new Vector3(i, 1.6f, j) + " with a player dist of " + dotProduct(new Vector3(i, 1.6f, j), player.transform.position, true));
+                    return;
+                }
+            }
+        }
+    }
 
     void spawnPlayer()
     {
@@ -240,15 +320,31 @@ public class ProceduralGeneration : MonoBehaviour
 
                 if (floorCount == 4)
                 {
-                    Instantiate(player, new Vector3(i,1.6f,j), Quaternion.identity);
+                    Instantiate(player, new Vector3(i, 1.6f, j), Quaternion.identity);
                     return;
                 }
             }
         }
     }
+    #endregion
 
-	// Update is called once per frame
-	void Update ()
+    float dotProduct(Vector3 vec1, Vector3 vec2, bool useYAxis)
+    {
+        if (useYAxis)
+        {
+            return (float)Math.Sqrt((vec1 - vec2).magnitude);
+        }
+        else
+        {
+            Vector2 vec1_2d = new Vector2(vec1.x, vec1.z);
+            Vector2 vec2_2d = new Vector2(vec2.x, vec2.z);
+
+            return (float)Math.Sqrt((vec1_2d - vec2_2d).magnitude);
+        }
+    }
+
+    // Update is called once per frame
+    void Update ()
     {
         if (DEVMODE)
         {
@@ -279,6 +375,11 @@ public class ProceduralGeneration : MonoBehaviour
             if (Input.GetKeyDown("[5]"))
             {
                 spawnPlayer();
+            }
+
+            if (Input.GetKeyDown("[6]"))
+            {
+                spawnNPC();
             }
 
             if (Input.GetKeyDown("[7]"))

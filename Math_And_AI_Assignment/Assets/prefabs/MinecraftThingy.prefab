@@ -1,0 +1,64 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &100100000
+Prefab:
+  m_ObjectHideFlags: 1
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications: []
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 0}
+  m_RootGameObject: {fileID: 1329599070500576}
+  m_IsPrefabAsset: 1
+--- !u!1 &1329599070500576
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4027385151203586}
+  - component: {fileID: 114681724611275422}
+  m_Layer: 0
+  m_Name: MinecraftThingy
+  m_TagString: MapGenerator
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4027385151203586
+Transform:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1329599070500576}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 4.1659155, y: 0.5215156, z: 2.209434}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114681724611275422
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1329599070500576}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 255017c3d53cb824e87d64870676d0b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  simpleInstance: 0
+  tileCount: {x: 100, y: 1, z: 100}
+  tilePosMult: {x: 1, y: 1, z: 1}
+  mesh: {fileID: 1125344924233418, guid: 3b96c8611f77ba645b876331c60cfc8a, type: 2}
+  clusterPassIterations: 2
+  player: {fileID: 1627524881739264, guid: 14edfce2396389b44bb6092fc92af057, type: 2}
+  enemy: {fileID: 1202589232736326, guid: 67b1ced1550881e449a677218f9776a9, type: 2}
+  DEVMODE: 1
+  floorMaterial: {fileID: 2100000, guid: 3c8600be54e7eed4cb0d038a0f2d846b, type: 2}
+  wallMaterial: {fileID: 2100000, guid: 8da16facb8c63f94f87029b35fbcda47, type: 2}
+  collisionCheckOverride: 1
